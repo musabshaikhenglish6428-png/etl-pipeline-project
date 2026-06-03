@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 CREATE TABLE staging (
     id SERIAL PRIMARY KEY,
 
@@ -25,6 +27,16 @@ CREATE TABLE staging (
 
     run_id UUID,
     loaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE staging
+ADD CONSTRAINT unique_sale
+UNIQUE (
+    product_id,
+    sale_date,
+    sales_rep,
+    sales_amount,
+    quantity_sold
 );
 
 CREATE TABLE processed (
