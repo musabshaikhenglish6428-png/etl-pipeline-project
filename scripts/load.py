@@ -1,7 +1,7 @@
 from db_connect import get_connection
 import pandas as pd
 import uuid
-import os
+from extract import extract_data
 
 conn = None
 cur = None
@@ -29,14 +29,8 @@ try:
     """, (run_id,))
 
     conn.commit()
-    
-    csv_path = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "data",
-    "sales_data.csv")
-    print(csv_path)
-    df = pd.read_csv(csv_path)
+
+    df = extract_data()
 
     required_columns = [
     "Product_ID",

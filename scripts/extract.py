@@ -1,10 +1,13 @@
-import pandas as pd 
+import pandas as pd
+import os
 
-df = pd.read_csv(r"C:\Users\DELL\OneDrive\Desktop\Project\data\sales_data.csv")
+def extract_data():
 
-print(df.shape)
-print(df.isnull().sum())
-print(df.info())
-print("Rows:", len(df))
-print("Columns:", len(df.columns))
-print("COlumns : " ,df.columns.tolist())
+    csv_path = os.path.join(
+        os.path.dirname(__file__),
+        "..",
+        "data",
+        "sales_data.csv"
+    )
+
+    return pd.read_csv(csv_path)
