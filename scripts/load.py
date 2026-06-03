@@ -27,7 +27,7 @@ try:
         0
     )
     """, (run_id,))
-    
+
     conn.commit()
     
     csv_path = os.path.join(
@@ -37,12 +37,35 @@ try:
     "sales_data.csv")
     print(csv_path)
     df = pd.read_csv(csv_path)
-    
+
+    required_columns = [
+    "Product_ID",
+    "Sale_Date",
+    "Sales_Rep",
+    "Region",
+    "Sales_Amount",
+    "Quantity_Sold",
+    "Product_Category",
+    "Unit_Cost",
+    "Unit_Price",
+    "Customer_Type",
+    "Discount",
+    "Payment_Method",
+    "Sales_Channel",
+    "Region_and_Sales_Rep"
+]
+    missing_columns = []
+
+    for column in required_columns:
+        if column not in df.columns:
+            missing_columns.append(column)
+    if missing_columns:
+        raise Exception(f"Missing columns: {missing_columns}")
     print("Run_ID:", run_id)
     print("Rows:", len(df))
     
     print("Connected")
-
+    rows_inserted = 0
     for _, row in df.iterrows():
 
         cur.execute("""
@@ -68,6 +91,14 @@ try:
             %s, %s, %s, %s, %s,
             %s, %s, %s, %s, %s
         )
+        ON CONFLICT (
+            product_id,
+            sale_date,
+            sales_rep,
+            sales_amount,
+            quantity_sold
+        )
+        DO NOTHING
         """, (
             int(row["Product_ID"]),
             row["Sale_Date"],
@@ -85,7 +116,8 @@ try:
             row["Region_and_Sales_Rep"],
             run_id
         ))
-
+    
+    rows_inserted += cur.rowcount    
     conn.commit()
 
     cur.execute("""
@@ -107,7 +139,7 @@ try:
         status = 'SUCCESS',
         rows_processed = %s
     WHERE run_id = %s
-    """, (len(df), run_id))
+    """, (rows_inserted ,run_id))
 
     conn.commit()
 
