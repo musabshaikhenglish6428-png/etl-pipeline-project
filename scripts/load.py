@@ -149,7 +149,9 @@ try:
 except Exception as e:
 
     print("FAILURE LOGIC:", e)
-
+    if conn:
+        conn.rollback()
+        
     if conn and cur:
 
         cur.execute("""
