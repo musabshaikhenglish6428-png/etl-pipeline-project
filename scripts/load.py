@@ -1,6 +1,7 @@
 from db_connect import get_connection
 import pandas as pd
 import uuid
+import os
 
 conn = None
 cur = None
@@ -28,9 +29,15 @@ try:
     """, (run_id,))
     
     conn.commit()
-
-    df = pd.read_csv(r"C:\Users\DELL\OneDrive\Desktop\Project\data\sales_data.csv")
-
+    
+    csv_path = os.path.join(
+    os.path.dirname(__file__),
+    "..",
+    "data",
+    "sales_data.csv")
+    print(csv_path)
+    df = pd.read_csv(csv_path)
+    
     print("Run_ID:", run_id)
     print("Rows:", len(df))
     
