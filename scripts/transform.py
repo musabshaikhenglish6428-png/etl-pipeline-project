@@ -1,12 +1,23 @@
+import logging
 import json
+
 from db_connect import get_connection
 from psycopg2.extras import RealDictCursor
+
+logging.basicConfig(
+    filename="pipeline.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+logging.info("Logging Initialized")
+
 def transform_data():
     conn = None
     cur = None
     run_id = None 
     try:
-        print("Transformation Started!!")
+        logging.info("Transformation Started!!")
 
         conn = get_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
@@ -17,19 +28,20 @@ def transform_data():
         )
         rows = cur.fetchall()
         
-        print("Rows found : ", len(rows))
+        logging.info(f"Rows found : {len(rows)}")
 
         passed = 0
         failed = 0
 
         if not rows:
-            print("No rows found in staging")
+            logging.warning("No rows found in staging")
             cur.close()
             conn.close()
             return
         cur.execute("TRUNCATE processed")
         cur.execute("TRUNCATE failed_rows")
         run_id = rows[0]["run_id"]
+        logging.info(f"Run ID : {run_id}")
 
         for row in rows:
             failure_reason = []
@@ -120,8 +132,11 @@ def transform_data():
                     passed += 1
         conn.commit()
 
-        print("Passed Rows :", passed)
-        print("Failure Rows :", failed)
+        logging.info(f"Passed Rows : {passed}")
+        if failed > 0:
+            logging.warning(f"Failed Rows : {failed}")
+        else:
+            logging.info("Failed Rows : 0")
         cur.execute("""
         UPDATE run_logs
         SET
@@ -140,7 +155,7 @@ def transform_data():
         conn.close()
     except Exception as e:
 
-        print("Error during transformation:", e)
+        logging.error(f"Transformation Failed : {e}")
 
         if conn:
             conn.rollback()
