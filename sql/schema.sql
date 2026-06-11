@@ -26,17 +26,15 @@ CREATE TABLE staging (
     region_and_sales_rep TEXT,
 
     run_id UUID,
-    loaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-ALTER TABLE staging
-ADD CONSTRAINT unique_sale
-UNIQUE (
-    product_id,
-    sale_date,
-    sales_rep,
-    sales_amount,
-    quantity_sold
+    loaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ---Alter Table staging ADD CONSTRAINT unique_sale....;
+    CONSTRAINT unique_sale UNIQUE (
+        product_id,
+        sale_date,
+        sales_rep,
+        sales_amount,
+        quantity_sold
+    )
 );
 
 CREATE TABLE processed (
@@ -65,22 +63,38 @@ CREATE TABLE processed (
     region_and_sales_rep TEXT,
 
     run_id UUID,
-    processed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    processed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ---Alter Table processed ADD CONSTRAINT processed_unique....;
+    CONSTRAINT processed_unique UNIQUE (
+        product_id,
+        sale_date,
+        sales_rep,
+        sales_amount,
+        quantity_sold
+    )
 );
 
 CREATE TABLE failed_rows (
     id SERIAL PRIMARY KEY,
+
     raw_data JSONB,
     failure_reason TEXT,
+
     run_id UUID,
+
     failed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE run_logs (
     run_id UUID PRIMARY KEY,
+
     start_time TIMESTAMP,
     end_time TIMESTAMP,
+
     status TEXT,
+
     rows_processed INTEGER,
-    rows_failed INTEGER
+    rows_failed INTEGER,
+
+    error_message TEXT
 );

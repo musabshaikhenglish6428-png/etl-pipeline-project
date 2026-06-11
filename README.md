@@ -1,7 +1,7 @@
 
 #  ETL Pipeline Project
 
-Production-grade ETL pipeline using  PYthon, Docker, Psql.
+Production-grade ETL pipeline using  Python, Docker, Psql.
 
 ## Sprint 1 completed
 Psql setup
