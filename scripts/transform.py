@@ -5,7 +5,7 @@ from db_connect import get_connection
 from psycopg2.extras import RealDictCursor
 
 logging.basicConfig(
-    filename="pipeline.log",
+    filename="../logs/pipeline.log",
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
