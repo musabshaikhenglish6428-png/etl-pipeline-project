@@ -44,94 +44,116 @@ def transform_data():
         logging.info(f"Run ID : {run_id}")
 
         for row in rows:
-            failure_reason = []
+            try:
+                failure_reason = []
 
-            if row["region"]:
-                row["region"] = row["region"].strip().title()
+                if row["region"]:
+                    row["region"] = row["region"].strip().title()
 
-            if row["sales_rep"]:
-                row["sales_rep"] = row["sales_rep"].strip().title()
+                if row["sales_rep"]:
+                    row["sales_rep"] = row["sales_rep"].strip().title()
 
-            if row["customer_type"]:
-                row["customer_type"] = row["customer_type"].strip().title()
+                if row["customer_type"]:
+                    row["customer_type"] = row["customer_type"].strip().title()
 
-            if row["payment_method"]:
-                row["payment_method"] = row["payment_method"].strip().title()
+                if row["payment_method"]:
+                    row["payment_method"] = row["payment_method"].strip().title()
 
-            if row["sales_channel"]:
-                row["sales_channel"] = row["sales_channel"].strip().title()
+                if row["sales_channel"]:
+                    row["sales_channel"] = row["sales_channel"].strip().title()
+                
+                if row['sales_amount'] <= 0:
+                    failure_reason.append("Invalid Sales Amount")
+                if row["quantity_sold"] <= 0:
+                    failure_reason.append("Invalid Quantity")
+                if not row["region"]:
+                    failure_reason.append("Missing Region")
+                if failure_reason:
+                    failed += 1
+                    cur.execute("""
+                    INSERT INTO failed_rows (
+                        raw_data,
+                        failure_reason,
+                        run_id
+                    )
+                    VALUES (
+                        %s,
+                        %s,
+                        %s
+                    )
+                    """, (
+                        json.dumps(row, default=str),
+                        ", ".join(failure_reason),
+                        row["run_id"]
+                    ))
+                else:
+                    cur.execute("""
+                    INSERT INTO processed (
+                        product_id,
+                        sale_date,
+                        sales_rep,
+                        region,
+                        sales_amount,
+                        quantity_sold,
+                        product_category,
+                        unit_cost,
+                        unit_price,
+                        customer_type,
+                        discount,
+                        payment_method,
+                        sales_channel,
+                        region_and_sales_rep,
+                        run_id
+                    )
+                    VALUES (
+                        %s,%s,%s,%s,%s,
+                        %s,%s,%s,%s,%s,
+                        %s,%s,%s,%s,%s
+                    )
+                    ON CONFLICT ON CONSTRAINT processed_unique 
+                    DO NOTHING
+                    """, (
+                        row["product_id"],
+                        row["sale_date"],
+                        row["sales_rep"],
+                        row["region"],
+                        row["sales_amount"],
+                        row["quantity_sold"],
+                        row["product_category"],
+                        row["unit_cost"],
+                        row["unit_price"],
+                        row["customer_type"],
+                        row["discount"],
+                        row["payment_method"],
+                        row["sales_channel"],
+                        row["region_and_sales_rep"],
+                        row["run_id"]
+                    ))
+                    if cur.rowcount == 1:
+                        passed += 1
             
-            if row['sales_amount'] <= 0:
-                failure_reason.append("Invalid Sales Amount")
-            if row["quantity_sold"] <= 0:
-                failure_reason.append("Invalid Quantity")
-            if not row["region"]:
-                failure_reason.append("Missing Region")
-            if failure_reason:
+            except Exception as row_error:
+                logging.error(
+                    f"Product ID {row['product_id']} failed: {row_error}"
+                )
+
                 failed += 1
+
                 cur.execute("""
                 INSERT INTO failed_rows (
                     raw_data,
                     failure_reason,
                     run_id
                 )
-                VALUES (
-                    %s,
-                    %s,
-                    %s
-                )
+                VALUES (%s, %s, %s)
                 """, (
                     json.dumps(row, default=str),
-                    ", ".join(failure_reason),
+                    str(row_error),
                     row["run_id"]
                 ))
-            else:
-                cur.execute("""
-                INSERT INTO processed (
-                    product_id,
-                    sale_date,
-                    sales_rep,
-                    region,
-                    sales_amount,
-                    quantity_sold,
-                    product_category,
-                    unit_cost,
-                    unit_price,
-                    customer_type,
-                    discount,
-                    payment_method,
-                    sales_channel,
-                    region_and_sales_rep,
-                    run_id
-                )
-                VALUES (
-                    %s,%s,%s,%s,%s,
-                    %s,%s,%s,%s,%s,
-                    %s,%s,%s,%s,%s
-                )
-                ON CONFLICT ON CONSTRAINT processed_unique 
-                DO NOTHING
-                """, (
-                    row["product_id"],
-                    row["sale_date"],
-                    row["sales_rep"],
-                    row["region"],
-                    row["sales_amount"],
-                    row["quantity_sold"],
-                    row["product_category"],
-                    row["unit_cost"],
-                    row["unit_price"],
-                    row["customer_type"],
-                    row["discount"],
-                    row["payment_method"],
-                    row["sales_channel"],
-                    row["region_and_sales_rep"],
-                    row["run_id"]
-                ))
-                if cur.rowcount == 1:
-                    passed += 1
-        conn.commit()
 
+                continue
+        conn.commit()
         logging.info(f"Passed Rows : {passed}")
         if failed > 0:
             logging.warning(f"Failed Rows : {failed}")
@@ -166,9 +188,13 @@ def transform_data():
             UPDATE run_logs
             SET
                 status = 'FAILED',
-                end_time = CURRENT_TIMESTAMP
+                end_time = CURRENT_TIMESTAMP,
+                error_message = %s
             WHERE run_id = %s
-            """, (run_id,))
+            """, (
+                str(e),
+                run_id
+            ))
 
             conn.commit()
 
