@@ -40,9 +40,21 @@ def transform_data():
             return
         cur.execute("TRUNCATE processed")
         cur.execute("TRUNCATE failed_rows")
-        run_id = rows[0]["run_id"]
-        logging.info(f"Run ID : {run_id}")
 
+        run_id = rows[0]["run_id"]
+        
+        unique_run_ids = set(
+            row["run_id"]
+            for row in rows
+        )
+
+        logging.info(
+            f"Run IDs in batch: {len(unique_run_ids)}"
+        )
+
+        logging.info(
+            f"Run ID : {run_id}"
+        )
         for row in rows:
             try:
                 failure_reason = []
@@ -175,6 +187,7 @@ def transform_data():
         conn.commit()
         cur.close()
         conn.close()
+        logging.info("-------------------------------------------------")
     except Exception as e:
 
         logging.error(f"Transformation Failed : {e}")
@@ -203,5 +216,8 @@ def transform_data():
 
         if conn:
             conn.close()
+
+        raise
+
 if __name__ == "__main__":
     transform_data()
