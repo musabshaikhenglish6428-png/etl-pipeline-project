@@ -26,6 +26,10 @@ def main():
                 continue
 
             if is_file_processed(file_name):
+                # File already processed successfully.
+                # Reprocessing requires removing the
+                # corresponding run_logs entry or
+                # implementing a future --force option.
                 logging.info(
                     f"Skipping {file_name} already processed"
                 )
