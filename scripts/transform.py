@@ -41,6 +41,12 @@ def transform_data():
         cur.execute("TRUNCATE processed")
         cur.execute("TRUNCATE failed_rows")
 
+        # Batch mode may contain multiple run_ids.
+        # Current transform processes all rows together.
+        # Future improvement:
+        # 1. Process one run_id at a time
+        # 2. Introduce batch-level tracking
+
         run_id = rows[0]["run_id"]
         
         unique_run_ids = set(
