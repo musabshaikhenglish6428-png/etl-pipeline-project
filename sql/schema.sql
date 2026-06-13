@@ -98,3 +98,6 @@ CREATE TABLE run_logs (
 
     error_message TEXT
 );
+
+ALTER TABLE run_logs
+ADD COLUMN source_file TEXT;

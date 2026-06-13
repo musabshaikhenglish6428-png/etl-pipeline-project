@@ -1,11 +1,42 @@
+# ETL Pipeline Project
 
-#  ETL Pipeline Project
+Production-grade ETL pipeline built using Python, PostgreSQL and Docker.
 
-Production-grade ETL pipeline using  Python, Docker, Psql.
+## Features
 
-## Sprint 4
-Structured logging
-Error tracking
-Rollback support
-Persistent logs
-Row-level exception handling
+- Extract CSV data using pandas
+- Load raw data into PostgreSQL staging table
+- Transform and validate records
+- Route failed records to failed_rows
+- Batch processing of multiple CSV files
+- Unique run_id tracking
+- Structured logging
+- Idempotent processing
+- File-level failure isolation
+
+## Tech Stack
+
+- Python
+- PostgreSQL
+- pandas
+- psycopg2
+- Docker
+- Docker Compose
+
+## Pipeline Flow
+
+CSV Files
+→ Extract
+→ Staging Table
+→ Transform
+→ Processed Table
+→ Failed Rows
+→ Run Logs
+
+## Run
+
+python scripts/main.py
+
+## Sprint 5: Complete
+Known limitation:
+Transform batch metrics are attributed to the first run_id in the batch.
