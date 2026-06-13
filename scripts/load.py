@@ -1,5 +1,5 @@
 from db_connect import get_connection
-import pandas as pd
+
 import uuid
 from extract import extract_data
 
@@ -111,17 +111,7 @@ try:
             run_id
         ))
     
-    rows_inserted += cur.rowcount    
-    conn.commit()
-
-    cur.execute("""
-    UPDATE run_logs
-    SET
-        end_time = CURRENT_TIMESTAMP,
-        status = 'SUCCESS'
-    WHERE run_id = %s
-    """, (run_id,))
-
+        rows_inserted += cur.rowcount    
     conn.commit()
 
     print("All rows loaded into staging")
