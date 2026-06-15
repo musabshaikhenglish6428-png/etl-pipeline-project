@@ -13,6 +13,11 @@ logging.basicConfig(
 logging.info("Logging Initialized")
 
 def transform_data():
+    """
+    Validates staging records and loads
+    successful rows into processed while
+    routing invalid rows to failed_rows
+    """
     conn = None
     cur = None
     run_id = None 

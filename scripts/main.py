@@ -6,6 +6,10 @@ from transform import transform_data
 
 
 def main():
+    """
+    Orchestrates batch ETL execution,
+    logging, and transformation flow.
+    """
     try:
         logging.info("Pipeline Started")
 

@@ -6,6 +6,9 @@ from dotenv import load_dotenv
 load_dotenv("../.env")
 
 def get_connection():
+    """
+    Creates and returns a PostgreSQL database connection.
+    """    
     return psycopg2.connect(
         host=os.getenv("DB_HOST"),
         port=os.getenv("DB_PORT"),
