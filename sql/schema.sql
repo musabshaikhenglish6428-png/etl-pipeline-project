@@ -25,7 +25,7 @@ CREATE TABLE staging (
 
     region_and_sales_rep TEXT,
 
-    run_id UUID,
+    run_id UUID NOT NULL,
     loaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ---Alter Table staging ADD CONSTRAINT unique_sale....;
     CONSTRAINT unique_sale UNIQUE (

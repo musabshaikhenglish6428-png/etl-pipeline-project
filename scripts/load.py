@@ -6,6 +6,10 @@ from db_connect import get_connection
 from extract import extract_data
 
 def is_file_processed(file_name):
+    """
+    Checks whether a source file has already
+    been processed successfully
+    """
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("""
@@ -24,6 +28,10 @@ def is_file_processed(file_name):
 print(is_file_processed("sales_jan.csv"))
 
 def load_data(csv_path):
+    """
+    Loads source CSV records into the staging table and
+    Tracks execution metadata in run_logs
+    """
     conn = None
     cur = None
 
