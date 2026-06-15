@@ -10,3 +10,6 @@ logs/
 .vscode/
 
 *.pptx
+
+docs/
+INTERVIEW_NOTES.md
