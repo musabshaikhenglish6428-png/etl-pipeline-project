@@ -10,5 +10,5 @@ COPY . .
 
 RUN mkdir -p logs
 
-CMD ["python", "etl/main.py"]
+CMD ["python", "scripts/main.py"]
 
