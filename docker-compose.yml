@@ -25,7 +25,7 @@ services:
       postgres:
         condition: service_healthy
     volumes:
-      - ./data:/app/data
+      - ./data/input:/app/data/input
       - ./logs:/logs
     command: python scripts/main.py
     restart: "on-failure:3"
