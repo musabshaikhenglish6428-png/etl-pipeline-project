@@ -8,5 +8,7 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD ["python", "etl/main.py"]
+RUN mkdir -p logs
+
+CMD ["python", "scripts/main.py"]
 

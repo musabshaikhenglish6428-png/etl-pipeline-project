@@ -37,6 +37,16 @@ CSV Files
 
 python scripts/main.py
 
-## Sprint 6: Complete
+## Sprint 6: Completed
+
 Known limitation:
 Transform batch metrics are attributed to the first run_id in the batch.
+
+## Sprint 4 Logging and Reliability
+
+- Logs are persisted using Docker volume mapping: `./logs:/logs`
+- Pipeline logs are stored in `logs/pipeline.log`
+- Log level is configurable using `LOG_LEVEL=INFO`
+- Python service uses restart policy `on-failure:3`
+- PostgreSQL health check ensures Python starts only after DB is healthy
+
