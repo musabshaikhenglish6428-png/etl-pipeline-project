@@ -37,6 +37,6 @@ CSV Files
 
 python scripts/main.py
 
-## Sprint 5: Complete
+## Sprint 6: Complete
 Known limitation:
 Transform batch metrics are attributed to the first run_id in the batch.
